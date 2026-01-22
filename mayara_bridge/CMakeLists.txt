@@ -35,6 +35,33 @@ endif()
 # Protobuf
 find_package(Protobuf REQUIRED)
 
+# CURL for HTTP requests
+find_package(CURL QUIET)
+if(NOT CURL_FOUND)
+  # Try pkg-config
+  pkg_check_modules(CURL libcurl)
+  if(NOT CURL_FOUND)
+    find_library(CURL_LIBRARIES curl)
+    find_path(CURL_INCLUDE_DIRS curl/curl.h)
+    if(CURL_LIBRARIES AND CURL_INCLUDE_DIRS)
+      set(CURL_FOUND TRUE)
+    else()
+      message(WARNING "CURL not found. Install with: sudo apt install libcurl4-openssl-dev")
+    endif()
+  endif()
+endif()
+
+# JSON library (nlohmann/json) - optional
+find_package(nlohmann_json QUIET)
+if(NOT nlohmann_json_FOUND)
+  # Try pkg-config
+  pkg_check_modules(NLOHMANN_JSON nlohmann_json)
+  if(NOT NLOHMANN_JSON_FOUND)
+    message(WARNING "nlohmann_json not found. Using simple JSON parser fallback. "
+                    "Install with: sudo apt install nlohmann-json3-dev for better JSON support")
+  endif()
+endif()
+
 # Include directories
 include_directories(
   include
@@ -75,6 +102,21 @@ endif()
 
 target_link_libraries(mayara_bridge ${Protobuf_LIBRARIES})
 target_include_directories(mayara_bridge PRIVATE ${Protobuf_INCLUDE_DIRS})
+
+if(CURL_FOUND)
+  target_link_libraries(mayara_bridge ${CURL_LIBRARIES})
+  target_include_directories(mayara_bridge PRIVATE ${CURL_INCLUDE_DIRS})
+  target_compile_definitions(mayara_bridge PRIVATE HAVE_CURL)
+endif()
+
+if(nlohmann_json_FOUND)
+  target_link_libraries(mayara_bridge nlohmann_json::nlohmann_json)
+  target_compile_definitions(mayara_bridge PRIVATE HAVE_NLOHMANN_JSON)
+elseif(NLOHMANN_JSON_FOUND)
+  target_link_libraries(mayara_bridge ${NLOHMANN_JSON_LIBRARIES})
+  target_include_directories(mayara_bridge PRIVATE ${NLOHMANN_JSON_INCLUDE_DIRS})
+  target_compile_definitions(mayara_bridge PRIVATE HAVE_NLOHMANN_JSON)
+endif()
 
 # Install
 install(TARGETS mayara_bridge
