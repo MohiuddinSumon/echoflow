@@ -31,7 +31,7 @@ ros2 run mayara_bridge mayara_bridge \
   --ros-args \
   -p mayara_host:=localhost \
   -p mayara_port:=6502 \
-  -p radar_id:=radar-0 \
+  -p radar_id:=radar-1 \
   -p frame_id:=radar \
   -p topic_name:=data
 ```
@@ -44,14 +44,14 @@ ros2 run mayara_bridge mayara_bridge \
   -r __ns:=/aura/perception/sensors/halo_a \
   -p mayara_host:=localhost \
   -p mayara_port:=6502 \
-  -p radar_id:=radar-0
+  -p radar_id:=radar-1
 ```
 
 ## Parameters
 
 - `mayara_host` (string, default: "localhost") - Mayara server hostname
 - `mayara_port` (int, default: 6502) - Mayara server port
-- `radar_id` (string, default: "radar-0") - Radar ID from Mayara
+- `radar_id` (string, default: "radar-1") - Radar ID from Mayara
 - `frame_id` (string, default: "radar") - TF frame ID for radar messages
 - `topic_name` (string, default: "data") - ROS 2 topic to publish to
 - `range_min` (double, default: 0.0) - Minimum radar range in meters

@@ -18,7 +18,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'radar_id',
-            default_value='radar-0',
+            default_value='radar-1',
             description='Radar ID from Mayara'
         ),
         DeclareLaunchArgument(

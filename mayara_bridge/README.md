@@ -36,7 +36,7 @@ ros2 run mayara_bridge_cpp mayara_bridge_cpp \
   --ros-args \
   -p mayara_host:=localhost \
   -p mayara_port:=6502 \
-  -p radar_id:=radar-0 \
+  -p radar_id:=radar-1 \
   -p frame_id:=radar \
   -p topic_name:=data
 ```

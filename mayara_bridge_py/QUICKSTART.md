@@ -31,7 +31,7 @@ cd ~/Projects/KAHU/mayara
 
 Wait for it to detect your radar. You should see output like:
 ```
-Found radar: radar-0
+Found radar: radar-1
 Listening on port 6502
 ```
 
@@ -51,7 +51,7 @@ ros2 run mayara_bridge mayara_bridge \
   -r __ns:=/aura/perception/sensors/halo_a \
   -p mayara_host:=localhost \
   -p mayara_port:=6502 \
-  -p radar_id:=radar-0 \
+  -p radar_id:=radar-1 \
   -p frame_id:=radar
 ```
 

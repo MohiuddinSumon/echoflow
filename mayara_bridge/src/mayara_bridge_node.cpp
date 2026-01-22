@@ -39,7 +39,7 @@ MayaraBridgeNode::MayaraBridgeNode()
   // Declare parameters
   this->declare_parameter<std::string>("mayara_host", "localhost");
   this->declare_parameter<int>("mayara_port", 6502);
-  this->declare_parameter<std::string>("radar_id", "radar-0");
+  this->declare_parameter<std::string>("radar_id", "radar-1");
   this->declare_parameter<std::string>("frame_id", "radar");
   this->declare_parameter<std::string>("topic_name", "data");
   this->declare_parameter<double>("range_min", 0.0);
@@ -116,6 +116,9 @@ void MayaraBridgeNode::fetchRadarInfo()
 
   try
   {
+    std::string stream_url;
+    bool radar_found = false;
+    
 #ifdef HAVE_NLOHMANN_JSON
     auto json_data = json::parse(response_data);
     
@@ -124,7 +127,9 @@ void MayaraBridgeNode::fetchRadarInfo()
       auto radar_info = json_data[radar_id_];
       spokes_per_revolution_ = radar_info.value("spokes_per_revolution", 2048);
       max_spoke_len_ = radar_info.value("maxSpokeLen", 1024);
-      std::string stream_url = radar_info.value("streamUrl", "");
+      stream_url = radar_info.value("streamUrl", "");
+      radar_found = true;
+    }
 #else
     // Simple JSON parsing fallback - just extract basic info
     // This is a minimal implementation - for production use nlohmann-json
@@ -158,7 +163,6 @@ void MayaraBridgeNode::fetchRadarInfo()
       }
       
       // Extract streamUrl
-      std::string stream_url;
       size_t url_pos = response_data.find("streamUrl", id_pos);
       if (url_pos != std::string::npos)
       {
@@ -167,10 +171,14 @@ void MayaraBridgeNode::fetchRadarInfo()
         if (quote1 != std::string::npos && quote2 != std::string::npos)
         {
           stream_url = response_data.substr(quote1 + 1, quote2 - quote1 - 1);
+          radar_found = true;
         }
       }
+    }
 #endif
-      
+    
+    if (radar_found && !stream_url.empty())
+    {
       // Convert http:// to ws://
       size_t pos = stream_url.find("http://");
       if (pos != std::string::npos)
@@ -208,7 +216,6 @@ void MayaraBridgeNode::fetchRadarInfo()
       RCLCPP_ERROR(this->get_logger(), "Radar %s not found in response", 
                    radar_id_.c_str());
     }
-#endif
   }
   catch (const std::exception& e)
   {
@@ -264,7 +271,6 @@ marine_sensor_msgs::msg::RadarSector MayaraBridgeNode::convertToRadarSector(
   
   // Angle information
   uint32_t first_angle = sorted_spokes.front().angle;
-  uint32_t last_angle = sorted_spokes.back().angle;
   
   sector.angle_start = (first_angle / static_cast<double>(spokes_per_revolution_)) * 2.0 * M_PI;
   sector.angle_increment = (1.0 / static_cast<double>(spokes_per_revolution_)) * 2.0 * M_PI;
@@ -286,7 +292,8 @@ marine_sensor_msgs::msg::RadarSector MayaraBridgeNode::convertToRadarSector(
   sector.intensities.clear();
   for (const auto& spoke : sorted_spokes)
   {
-    marine_sensor_msgs::msg::RadarSector::Intensity intensity;
+    // Use decltype to get the correct nested message type
+    decltype(sector.intensities)::value_type intensity;
     
     if (spoke.data.empty())
     {

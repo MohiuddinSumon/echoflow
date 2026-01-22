@@ -36,7 +36,7 @@ class MayaraToROS2Bridge(Node):
         # Declare parameters
         self.declare_parameter('mayara_host', 'localhost')
         self.declare_parameter('mayara_port', 6502)
-        self.declare_parameter('radar_id', 'radar-0')
+        self.declare_parameter('radar_id', 'radar-1')
         self.declare_parameter('frame_id', 'radar')
         self.declare_parameter('topic_name', 'data')
         self.declare_parameter('range_min', 0.0)
