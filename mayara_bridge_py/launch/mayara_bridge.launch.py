@@ -38,9 +38,9 @@ def generate_launch_description():
         ),
         
         Node(
-            package='mayara_bridge',
-            executable='mayara_bridge',
-            name='mayara_bridge',
+            package='mayara_bridge_py',
+            executable='mayara_bridge_py',
+            name='mayara_bridge_py',
             namespace=LaunchConfiguration('namespace'),
             parameters=[{
                 'mayara_host': LaunchConfiguration('mayara_host'),

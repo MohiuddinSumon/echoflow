@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'mayara_bridge'
+package_name = 'mayara_bridge_py'
 
 setup(
     name=package_name,
@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'mayara_bridge = mayara_bridge.mayara_to_ros2_bridge:main',
+            'mayara_bridge_py = mayara_bridge_py.mayara_to_ros2_bridge:main',
         ],
     },
 )
