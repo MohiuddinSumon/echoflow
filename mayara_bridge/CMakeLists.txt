@@ -96,6 +96,7 @@ ament_target_dependencies(mayara_bridge
 if(LIBWEBSOCKETS_FOUND)
   target_link_libraries(mayara_bridge ${LIBWEBSOCKETS_LIBRARIES})
   target_include_directories(mayara_bridge PRIVATE ${LIBWEBSOCKETS_INCLUDE_DIRS})
+  target_compile_definitions(mayara_bridge PRIVATE HAVE_LIBWEBSOCKETS)
 else()
   message(WARNING "libwebsockets not found. Install with: sudo apt install libwebsockets-dev")
 endif()
@@ -133,6 +134,16 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/config")
   install(DIRECTORY config
     DESTINATION share/${PROJECT_NAME}
+  )
+endif()
+
+# Install Python scripts
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/scripts")
+  install(PROGRAMS
+    scripts/log_radar_data.py
+    scripts/inspect_websocket.py
+    scripts/inspect_data.sh
+    DESTINATION lib/${PROJECT_NAME}
   )
 endif()
 
